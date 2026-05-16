@@ -1,0 +1,26 @@
+[build-system]
+requires = ["setuptools>=69", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "aasef"
+version = "0.1.0"
+description = "Reproducible evaluation framework for security boundaries in tool-using AI agents: prompt injection, tool permissions and approval gates."
+keywords = ["ai-agents", "prompt-injection", "tool-permissions", "agent-security", "evaluation"]
+requires-python = ">=3.10"
+dependencies = []
+
+[project.optional-dependencies]
+dev = [
+    "pytest==8.3.4",
+]
+
+[project.scripts]
+aasef = "aasef.cli:main"
+
+[tool.setuptools.packages.find]
+include = ["aasef*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
