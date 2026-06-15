@@ -81,6 +81,68 @@ Add one JSON file to `scenarios/` following the schema in
 `must_complete` / `must_not_complete` lists. Success criteria are
 defined in the file before it runs.
 
+## Using it on your own model
+
+By default the framework uses built-in pretend agents. You can also
+plug in your own model, through any API that speaks the
+OpenAI-compatible chat format. The framework sends the model the
+task and the list of allowed tools, and the model replies with the
+actions it wants to take. The safety checks still run at the tool
+boundary, so a bad answer from the model is blocked the same way a
+bad answer from a pretend agent is.
+
+Step 1. Set three values in your shell. Do not put them in a file.
+
+```bash
+export AASEF_API_BASE_URL="https://your-api-address"
+export AASEF_API_KEY="your-key-here"
+export AASEF_MODEL="your-model-name"
+```
+
+Step 2. Run the evaluation with the real model.
+
+```bash
+python -m aasef run --agent api
+```
+
+That is it. To test one setup only, add `--config tool-side-enforced`.
+To use different values for one run, pass them as flags instead:
+`--api-base-url`, `--api-key`, `--model`. A flag wins over the
+saved value. Prefer the saved values: a flag shows up in your shell
+history, and your key should not be there.
+
+What happens if the model call fails? The run does not crash. That
+run gets an empty plan, the failure is written in the trace, and the
+run goes on. The framework never tries the network call twice.
+
+Your key is sent to your API only. It is never written to a trace,
+a report, a log or the screen. A test in `tests/test_model_adapter.py`
+checks this.
+
+## Using it on your own scenarios
+
+Step 1. Copy one file from the `scenarios/` folder. Pick one in the
+same group as what you want to test, for example a web page trap or
+a direct instruction trap.
+Step 2. Change the task to your real task, in plain words.
+Step 3. Change the rules to your real rules: which files, hosts and
+tools the agent may use.
+Step 4. Change the trap to your real attack: the untrusted page,
+document or tool output, and the bad steps it tells the agent to do.
+Step 5. Before you run it, write down what must happen and what must
+never happen. Those are the `must_complete` and `must_not_complete`
+lists in the file.
+Step 6. Run it: `python -m aasef run`.
+
+Safety rules for your own tests:
+
+- Use fake data only. Never use real files, real passwords or real
+  customer data in a scenario.
+- Never point a tool at your real files, real money or real systems.
+  The tools here are safe copies. Keep them that way.
+- Never put your API key in a scenario file, in the code or in a
+  report. Keep it in the shell values from step 1 only.
+
 ## Adding a tool
 
 Add a handler `ToolSet._do_<name>` in `aasef/tools.py`, register its
@@ -90,10 +152,11 @@ network or shell.
 
 ## Limitations
 
-- Agents are simulated policies, not real models. The framework
-  measures whether an architecture stops an attack, not whether a
-  specific model would fall for one. A real model adapter plugs in
-  behind `AgentAdapter` (see `docs/architecture.md`).
+- Agents are simulated policies by default, not real models. The
+  framework measures whether an architecture stops an attack, not
+  whether a specific model would fall for one. To test a real model,
+  use the built-in API connector — see "Using it on your own model"
+  above (`aasef/model_adapter.py`).
 - Task completion is 100% for all configurations because the
   suite's legitimate steps never conflict with enforcement. The
   suite does not yet include benign tasks that legitimately need

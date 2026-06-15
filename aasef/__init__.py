@@ -7,6 +7,7 @@ tools are sandboxed in-process with synthetic data.
 """
 
 from .agents import BASELINE, CONFIGS, HIERARCHY_AWARE, TOOL_SIDE_ENFORCED
+from .model_adapter import ApiModelAdapter
 from .permissions import Action, ApprovalGate, Scope
 from .runner import run_all, run_scenario
 from .scenario import Scenario
@@ -17,5 +18,5 @@ __version__ = "0.1.0"
 __all__ = [
     "Action", "ApprovalGate", "Scope", "Scenario", "Trace",
     "BASELINE", "HIERARCHY_AWARE", "TOOL_SIDE_ENFORCED", "CONFIGS",
-    "run_scenario", "run_all",
+    "ApiModelAdapter", "run_scenario", "run_all",
 ]

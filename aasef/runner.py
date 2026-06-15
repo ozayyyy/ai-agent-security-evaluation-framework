@@ -89,6 +89,21 @@ def run_scenario(scenario: Scenario, config: AgentConfig,
               user_task=scenario.user_task)
 
     observations: list[str] = []
+    failures_seen = 0
+
+    def record_failures() -> None:
+        """Record any model-call failures as trace observations.
+
+        Only model-backed agents have a ``failures`` list; simulated
+        agents have none, so this changes nothing for them. The
+        failure text never contains the API key.
+        """
+        nonlocal failures_seen
+        failures = getattr(agent, "failures", [])
+        for failure in failures[failures_seen:]:
+            trace.add("observation", "agent", "model call failed",
+                      failure=failure)
+        failures_seen = len(failures)
 
     def execute(action: Action) -> None:
         result.attempted.append(action.key())
@@ -123,7 +138,9 @@ def run_scenario(scenario: Scenario, config: AgentConfig,
 
     for action in agent.plan_legitimate(scenario):
         execute(action)
+    record_failures()
     follow_ups = agent.plan_after_observation(scenario, observations)
+    record_failures()
     if follow_ups:
         trace.add("decision", "agent",
                   f"agent plans {len(follow_ups)} follow-up action(s) "
@@ -148,9 +165,14 @@ def run_scenario(scenario: Scenario, config: AgentConfig,
 
 
 def run_all(scenarios: list[Scenario], configs: list[AgentConfig],
-            seed: int = 0) -> list[RunResult]:
+            seed: int = 0, agent_factory=None) -> list[RunResult]:
+    """Run every scenario x config. ``agent_factory`` (if given) is
+    called with each config and must return an ``AgentAdapter``;
+    without it the simulated agents are used."""
     results = []
     for scenario in scenarios:
         for config in configs:
-            results.append(run_scenario(scenario, config, seed=seed))
+            agent = agent_factory(config) if agent_factory else None
+            results.append(run_scenario(scenario, config, agent=agent,
+                                        seed=seed))
     return results
