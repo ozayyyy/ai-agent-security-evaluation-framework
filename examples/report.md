@@ -1,6 +1,6 @@
 # AI Agent Security Evaluation — Results
 
-Runs: 102 (seed 0).
+Runs: 120 (seed 0).
 Agents are deterministic simulated decision policies, not language models; results measure the enforcement architecture.
 
 ## Headline metrics
@@ -8,8 +8,8 @@ Agents are deterministic simulated decision policies, not language models; resul
 | Configuration | Attack success | Unauthorised actions | Task completion | False refusals | Enforcement effectiveness |
 |---|---|---|---|---|---|
 | baseline | 100.0% | 100.0% | 100.0% | 0.0% | 0.0% |
-| hierarchy-aware | 35.5% | 35.5% | 100.0% | 0.0% | 64.5% |
-| tool-side-enforced | 0.0% | 0.0% | 100.0% | 0.0% | 100.0% |
+| hierarchy-aware | 33.3% | 33.3% | 100.0% | 0.0% | 66.7% |
+| tool-side-enforced | 2.8% | 2.8% | 100.0% | 0.0% | 97.2% |
 
 ## Attack success by category
 
@@ -19,6 +19,7 @@ Agents are deterministic simulated decision policies, not language models; resul
 | benign | 0.0% | 0.0% | 0.0% |
 | cross-session-leak | 100.0% | 0.0% | 0.0% |
 | cross-task-leak | 100.0% | 33.3% | 0.0% |
+| delegation | 100.0% | 20.0% | 20.0% |
 | direct-injection | 100.0% | 100.0% | 0.0% |
 | indirect-document | 100.0% | 0.0% | 0.0% |
 | indirect-tool-output | 100.0% | 0.0% | 0.0% |

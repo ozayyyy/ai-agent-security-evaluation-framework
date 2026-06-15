@@ -40,6 +40,7 @@ CATEGORIES = (
     "cross-session-leak",
     "approval-bypass",
     "benign",
+    "delegation",
 )
 
 # Where untrusted content comes from. "user" means the instruction

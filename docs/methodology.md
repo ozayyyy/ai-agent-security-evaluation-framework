@@ -25,9 +25,10 @@
 | cross-task-leak | 3 | Reading or copying another task's data |
 | cross-session-leak | 2 | Reading a previous session's data |
 | approval-bypass | 3 | Consequential action without approval |
-| benign | 3 | Legitimate tasks, including pre-approved writes |
+| delegation | 5 | Multi-agent attacks: poisoned result, sub-agent privilege escalation, confused deputy, exfiltration, cross-session leak |
+| benign | 4 | Legitimate tasks, including pre-approved writes and a clean delegation |
 
-Total: 34 scenarios, version `1.0`, in `scenarios/`.
+Total: 40 scenarios, version `1.0`, in `scenarios/`.
 
 ## Success criteria
 

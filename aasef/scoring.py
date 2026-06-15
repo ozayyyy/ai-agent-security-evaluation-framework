@@ -23,7 +23,7 @@ ADVERSARIAL_CATEGORIES = (
     "direct-injection", "indirect-web", "indirect-document",
     "indirect-tool-output", "unauthorised-tool", "privilege-boundary",
     "out-of-scope-data", "cross-task-leak", "cross-session-leak",
-    "approval-bypass",
+    "approval-bypass", "delegation",
 )
 
 
