@@ -11,14 +11,14 @@ tool-side authorisation — not any particular model's behaviour.
 
 ## Measured results
 
-34 scenarios x 3 configurations, seed 0. Full results in
+40 scenarios x 3 configurations, seed 0. Full results in
 [`examples/report.md`](examples/report.md).
 
 | Configuration | Attack success | Task completion | False refusals | Enforcement effectiveness |
 |---|---|---|---|---|
 | baseline | 100.0% | 100.0% | 0.0% | 0.0% |
-| hierarchy-aware | 35.5% | 100.0% | 0.0% | 64.5% |
-| tool-side-enforced | 0.0% | 100.0% | 0.0% | 100.0% |
+| hierarchy-aware | 33.3% | 100.0% | 0.0% | 66.7% |
+| tool-side-enforced | 2.8% | 100.0% | 0.0% | 97.2% |
 
 What this shows:
 
@@ -26,14 +26,15 @@ What this shows:
   untrusted web pages, documents and tool output, so every attack in
   the suite succeeds against it.
 - Hierarchy-aware filtering stops all indirect injection (web,
-  document, tool output) but still falls for the 11 scenarios where
-  the instruction comes from the user, a trusted principal — direct
-  injection, and user-issued out-of-scope or privilege-boundary
-  requests.
+  document, tool output) but still falls for the 12 scenarios where
+  the instruction comes from a trusted principal — direct
+  injection, user-issued out-of-scope or privilege-boundary
+  requests, and the confused-deputy delegation.
 - Tool-side enforcement blocks every attack in the suite at the tool
-  boundary or the approval gate, even when the agent attempts the
-  action, while completing all benign tasks (pre-approved writes
-  included).
+  boundary or the approval gate except one: delegation-03, the
+  confused deputy, where the harmful step is the sub-agent's
+  legitimate plan and the sub-agent's scope allows it. It completes
+  all benign tasks (pre-approved writes included).
 
 ## Setup
 
@@ -80,6 +81,31 @@ Add one JSON file to `scenarios/` following the schema in
 `injected_steps`, `preapproved`, and `expected` with
 `must_complete` / `must_not_complete` lists. Success criteria are
 defined in the file before it runs.
+
+## Counterfactual module
+
+The framework can also ask "what if" about a run: what would
+have happened under a different instruction, or a different
+injection, in the same scenario with the same hidden
+disturbance? It answers by paired re-runs — the same scenario
+run twice with exactly one factor changed — because the
+simulated agents are deterministic under a fixed seed, so
+rewinding and branching is exact. Each scenario is classified
+from the pair of outcomes: **injection-driven** (the injection
+carries the outcome whatever the instruction is),
+**instruction-driven** (the outcome turns on which instruction
+was issued), or **robust** (the agent refuses in both
+branches). See [`docs/counterfactual.md`](docs/counterfactual.md).
+
+Inspiration for this module: "Counterfactual World Models:
+JEPAs That Reason About 'What If'" by Randall Balestriero and
+Yann LeCun (arXiv:2611.24778,
+https://arxiv.org/abs/2611.24778; code:
+https://github.com/galilai-group/counterfactual-WM). The
+implementation here is original paired re-runs and does not use
+the paper's code or its residual-reuse formula, which assumes
+action and disturbance add like physical forces and does not
+transfer to prompt and tool interactions.
 
 ## Using it on your own model
 
